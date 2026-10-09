@@ -1,0 +1,990 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="manifest.json">
+
+    <title>A&F Poultry Farm</title>
+
+<style>
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #f7fbf7, #e8f3eb);
+    color: #222;
+}
+
+header {
+    background: linear-gradient(135deg, #0f6b3a, #2e9d63);
+    color: white;
+    text-align: center;
+    padding: 25px 15px;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 28px;
+}
+
+header p {
+    margin: 8px 0 0;
+}
+
+nav {
+    background: white;
+    padding: 10px;
+    text-align: center;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    box-shadow: 0 2px 5px #ccc;
+}
+
+nav button {
+    border: none;
+    background: #176b3a;
+    color: white;
+    padding: 10px 12px;
+    margin: 3px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+section {
+    max-width: 700px;
+    margin: 20px auto;
+    padding: 20px;
+}
+
+.welcome {
+    text-align: center;
+}
+
+.cards,
+.records-summary {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.card,
+.summary-box {
+    background: white;
+    padding: 18px;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 2px 8px #ddd;
+}
+
+.card h3 {
+    margin-top: 0;
+    color: #176b3a;
+}
+
+.calculator {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px #ddd;
+}
+
+h2 {
+    color: #176b3a;
+    text-align: center;
+}
+
+label {
+    display: block;
+    margin-top: 12px;
+    font-weight: bold;
+}
+
+input {
+    width: 100%;
+    padding: 12px;
+    margin-top: 5px;
+    border: 1px solid #bbb;
+    border-radius: 6px;
+    font-size: 16px;
+}
+
+.main-button {
+    width: 100%;
+    margin-top: 18px;
+    padding: 13px;
+    background: #176b3a;
+    color: white;
+    border: none;
+    border-radius: 7px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.reset-button {
+    width: 100%;
+    margin-top: 8px;
+    padding: 12px;
+    background: #777;
+    color: white;
+    border: none;
+    border-radius: 7px;
+    font-size: 16px;
+}
+
+.result-box {
+    background: #f0f7f1;
+    padding: 12px;
+    margin-top: 8px;
+    border-radius: 6px;
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.result-box strong {
+    color: #176b3a;
+}
+
+.profit {
+    border: 2px solid #176b3a;
+}
+
+.summary-box {
+    background: #f0f7f1;
+    padding: 15px;
+}
+
+.summary-box strong {
+    display: block;
+    color: #176b3a;
+    font-size: 20px;
+    margin-top: 5px;
+}
+
+.record-item {
+    background: white;
+    margin-top: 12px;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 7px #ddd;
+}
+
+.record-item h3 {
+    margin-top: 0;
+    color: #176b3a;
+}
+
+.delete-button {
+    background: #c62828;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 5px;
+    margin-top: 10px;
+}
+
+.clear-button {
+    width: 100%;
+    background: #c62828;
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 7px;
+    margin-top: 15px;
+    font-size: 16px;
+}
+
+.about-farm,
+.contact-farm {
+    background: white;
+    padding: 25px;
+    border-radius: 18px;
+    box-shadow: 0 5px 18px rgba(0,0,0,0.07);
+}
+
+.about-farm h2,
+.contact-farm h2 {
+    color: #176b3a;
+}
+
+.about-farm p {
+    color: #4b5563;
+    line-height: 1.7;
+}
+
+.contact-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 15px;
+}
+
+.contact-card {
+    background: #f4f9f4;
+    padding: 20px 15px;
+    border-radius: 15px;
+    text-align: center;
+    border: 1px solid #e1eee4;
+}
+
+.contact-card span {
+    display: block;
+    font-size: 30px;
+    margin-bottom: 8px;
+}
+
+.contact-card strong {
+    display: block;
+    color: #176b3a;
+    margin-bottom: 7px;
+}
+
+.contact-card p {
+    margin: 0;
+    color: #5f6368;
+    font-size: 14px;
+}
+
+.quick-actions {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    margin-top: 25px;
+}
+
+.quick-actions button {
+    background: white;
+    border: none;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 3px 12px #ddd;
+    cursor: pointer;
+}
+
+.quick-actions strong,
+.quick-actions span {
+    display: block;
+    margin-top: 8px;
+}
+
+.farm-info {
+    background: white;
+    padding: 20px;
+    margin-top: 20px;
+    border-radius: 15px;
+    text-align: center;
+    box-shadow: 0 3px 12px #ddd;
+}
+
+footer {
+    text-align: center;
+    background: #176b3a;
+    color: white;
+    padding: 18px;
+    margin-top: 30px;
+}
+
+@media (max-width: 500px) {
+    .cards,
+    .records-summary,
+    .quick-actions {
+        grid-template-columns: 1fr;
+    }
+
+    header h1 {
+        font-size: 24px;
+    }
+
+    nav button {
+        padding: 8px;
+        font-size: 13px;
+    }
+}
+
+.farm-tips {
+    background: white;
+    padding: 25px;
+    margin-top: 20px;
+    border-radius: 15px;
+    box-shadow: 0 3px 12px #ddd;
+}
+
+.farm-tips h3 {
+    text-align: center;
+    color: #176b3a;
+}
+
+.tips-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+}
+
+.tip-card {
+    background: #f4f9f4;
+    padding: 18px;
+    border-radius: 12px;
+    text-align: center;
+}
+
+.tip-card span {
+    display: block;
+    font-size: 30px;
+    margin-bottom: 8px;
+}
+
+.tip-card strong {
+    display: block;
+    color: #176b3a;
+    margin-bottom: 8px;
+}
+
+.tip-card p {
+    margin: 0;
+    color: #555;
+    line-height: 1.5;
+}
+
+@media (max-width: 500px) {
+    .tips-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.tip-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.tip-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 5px 15px #ccc;
+}
+
+.whatsapp-button {
+    display: block;
+    width: 100%;
+    margin-top: 20px;
+    padding: 14px;
+    background: #25D366;
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.whatsapp-button:hover {
+    opacity: 0.9;
+}
+
+</style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+<header>
+    <h1>🐔 A&F Poultry Farm</h1>
+    <p>Smart Poultry Farming & Business Management</p>
+</header>
+<nav>
+    <button onclick="showHome()">🏠 Home</button>
+    <button onclick="showDashboard()">📊 Dashboard</button>
+    <button onclick="showCalculator()">💰 Profit</button>
+    <button onclick="showFeedCalculator()">🌾 Feed</button>
+    <button onclick="showRecords()">📋 Records</button>
+    <button onclick="showPoultryHealth()">🐔 Poultry Health</button>
+    <button onclick="showFinance()">💵 Finance</button>
+    <button onclick="showBackup()">💾 Backup & Restore</button>
+    <button onclick="showAuth()">🔐 Login</button>
+</nav>
+
+<!-- DASHBOARD -->
+<section id="dashboard" class="calculator">
+
+    <h2>📊 Farm Dashboard</h2>
+
+    <div class="records-summary">
+
+        <div class="summary-box">
+            🐔 Total Chickens
+            <strong id="dashboardChickens">0</strong>
+        </div>
+
+        <div class="summary-box">
+            🥚 Total Eggs
+            <strong id="dashboardEggs">0</strong>
+        </div>
+
+        <div class="summary-box">
+            🌾 Feed Used
+            <strong id="dashboardFeed">0 kg</strong>
+        </div>
+
+        <div class="summary-box">
+            💰 Total Sales
+            <strong id="dashboardSales">₦0</strong>
+        </div>
+
+        <div class="summary-box">
+            💊 Medicine Expenses
+            <strong id="dashboardMedicine">₦0</strong>
+        </div>
+
+        <div class="summary-box">
+            📈 Net Balance
+            <strong id="dashboardBalance">₦0</strong>
+        </div>
+
+        <div class="summary-box">
+            📋 Farm Records
+            <strong id="dashboardRecords">0</strong>
+        </div>
+
+    </div>
+
+    <div class="summary-box" style="margin-top:20px;">
+        <h3>📊 Farm Performance</h3>
+        <p>Compare your farm's sales and expenses.</p>
+        <canvas id="farmPerformanceChart" height="220"></canvas>
+    </div>
+
+<!-- ABOUT & CONTACT -->
+
+<section id="about">
+
+    <div class="about-farm">
+        <h2>🌱 About A&F Poultry Farm</h2>
+
+        <p>
+            A&F Poultry Farm is focused on poultry production,
+            proper farm management and helping farmers make better
+            decisions through simple record keeping and planning.
+        </p>
+
+        <p>
+            Our goal is to promote healthy birds, better production,
+            good farm practices and sustainable poultry farming.
+        </p>
+    </div>
+
+    <div class="contact-farm">
+        <h2>📞 Farm Contact</h2>
+
+        <div class="contact-grid">
+
+            <div class="contact-card">
+                <span>👨‍🌾</span>
+                <strong>Farm Owner</strong>
+                <p>Abdulfatah Muhammad</p>
+            </div>
+
+            <div class="contact-card">
+                <span>📍</span>
+                <strong>Location</strong>
+                <p>Zaria, Kaduna State</p>
+            </div>
+
+            <div class="contact-card">
+                <span>🐔</span>
+                <strong>Specialty</strong>
+                <p>Poultry & Livestock Farming</p>
+            </div>
+
+        </div>
+    </div>
+
+</section>
+</section>
+
+
+
+<!-- LOGIN AND REGISTRATION -->
+<section id="authSection" class="calculator" style="display:none;">
+    <h2>🔐 A&F Poultry Farm Account</h2>
+    <p>Create an account or log in to continue.</p>
+
+    <div class="auth-tabs">
+        <button type="button" onclick="showRegister()">📝 Create Account</button>
+        <button type="button" onclick="showLogin()">🔑 Log In</button>
+    </div>
+
+    <div id="registerPanel">
+        <h3>📝 Create Account</h3>
+
+        <form id="registerForm">
+            <label for="registerName">Full name:</label>
+            <input type="text" id="registerName" required>
+
+            <label for="registerEmail">Email address:</label>
+            <input type="email" id="registerEmail" required>
+
+            <label for="registerPassword">Password:</label>
+            <input type="password" id="registerPassword" minlength="8" required>
+
+            <label for="confirmPassword">Confirm password:</label>
+            <input type="password" id="confirmPassword" minlength="8" required>
+
+            <button type="submit" class="main-button">Create Account</button>
+        </form>
+    </div>
+
+    <hr>
+
+    <div id="loginPanel">
+        <h3>🔑 Log In</h3>
+
+        <form id="loginForm">
+            <label for="loginEmail">Email address:</label>
+            <input type="email" id="loginEmail" required>
+
+            <label for="loginPassword">Password:</label>
+            <input type="password" id="loginPassword" required>
+
+            <button type="submit" class="main-button">Log In</button>
+        </form>
+    </div>
+
+    <p id="authMessage" role="status"></p>
+    <button type="button" onclick="showHome()">Back to Home</button>
+</section>
+
+<!-- HOME -->
+<section id="home">
+    <div class="welcome">
+        <h1>🐔 A&F Poultry Farm</h1>
+        <h2>Smart Poultry Management</h2>
+        <p>
+            Manage your chickens, track farm records, calculate profit,
+            estimate feed requirements and monitor your poultry business
+            with ease.
+        </p>
+    </div>
+
+    <div class="quick-actions">
+
+        <button onclick="showDashboard()">
+            📊
+            <strong>Dashboard</strong>
+            <span>View farm summary</span>
+        </button>
+
+        <button onclick="showCalculator()">
+            💰
+            <strong>Profit Calculator</strong>
+            <span>Calculate farm profit</span>
+        </button>
+
+        <button onclick="showFeedCalculator()">
+            🌾
+            <strong>Feed Calculator</strong>
+            <span>Estimate feed needs</span>
+        </button>
+
+        <button onclick="showRecords()">
+            📋
+            <strong>Farm Records</strong>
+            <span>Manage farm records</span>
+        </button>
+
+    </div>
+
+    <div class="farm-info">
+        <h3>🌱 Your Farm, Your Records, Your Growth</h3>
+        <p>
+            Keep your poultry information organized and make better
+            decisions for your farm.
+        </p>
+    </div>
+</section>
+     <a href="https://wa.me/2348123598546" target="_blank" class="whatsapp-button">
+    💬 Chat with us on WhatsApp
+</a>
+
+    </div
+</section>
+
+<div class="farm-tips">
+    <h3>🐔 Poultry Farm Tips</h3>
+
+    <div class="tips-grid">
+
+        <div class="tip-card">
+            <span>💧</span>
+            <strong>Clean Water</strong>
+            <p>Always provide clean and fresh drinking water for your chickens.</p>
+        </div>
+
+        <div class="tip-card">
+            <span>🌾</span>
+            <strong>Good Feed</strong>
+            <p>Give your birds balanced feed and avoid sudden changes in their diet.</p>
+        </div>
+
+        <div class="tip-card">
+            <span>🧹</span>
+            <strong>Clean Housing</strong>
+            <p>Keep the poultry house clean, dry and well ventilated.</p>
+        </div>
+
+        <div class="tip-card">
+            <span>💉</span>
+            <strong>Prevent Diseases</strong>
+            <p>Observe your birds regularly and follow proper vaccination practices.</p>
+        </div>
+
+    </div>
+</div>	
+
+<!-- PROFIT CALCULATOR -->
+<section id="profitCalculator" class="calculator">
+
+    <h2>💰 Poultry Profit Calculator</h2>
+
+    <label>Number of Chickens</label>
+    <input id="chickens" type="number" value="20">
+
+    <label>Price per Chick (₦)</label>
+    <input id="chickPrice" type="number" value="1500">
+
+    <label>Total Feed Cost (₦)</label>
+    <input id="feedCost" type="number" value="21000">
+
+    <label>Medicine Cost (₦)</label>
+    <input id="medicineCost" type="number" value="5000">
+
+    <label>Other Expenses (₦)</label>
+    <input id="otherCost" type="number" value="0">
+
+    <label>Expected Mortality/Death Rate (%)</label>
+    <input id="mortality" type="number" value="0">
+
+    <label>Selling Price per Chicken (₦)</label>
+    <input id="sellingPrice" type="number" value="5000">
+
+    <button class="main-button" onclick="calculateProfit()">
+        💰 Calculate Profit
+    </button>
+
+    <button class="reset-button" onclick="resetCalculator()">
+        🔄 Reset
+    </button>
+
+    <div id="result"></div>
+
+</section>
+
+
+<!-- FEED CALCULATOR -->
+<section id="feedCalculator" class="calculator">
+
+    <h2>🌾 Feed Calculator</h2>
+
+    <label>Number of Chickens</label>
+    <input id="feedChickens" type="number" value="20">
+
+    <label>Feed per Chicken per Day (grams)</label>
+    <input id="feedPerChicken" type="number" value="100">
+
+    <label>Number of Days</label>
+    <input id="feedDays" type="number" value="30">
+
+    <button class="main-button" onclick="calculateFeed()">
+        🌾 Calculate Feed
+    </button>
+
+    <div id="feedResult"></div>
+
+</section>
+
+
+<section id="finance" class="calculator">
+
+    <h2>💰 Farm Finance Tracker</h2>
+ 
+<label>Transaction Date</label>
+<input id="financeDate" type="date">
+
+    <label>Transaction Type</label>
+    <select id="financeType">
+        <option value="income">💰 Income</option>
+        <option value="expense">💸 Expense</option>
+    </select>
+
+    <label>Category</label>
+    <select id="financeCategory">
+        <option value="Sales">🐔 Chicken/Egg Sales</option>
+        <option value="Feed">🌾 Feed</option>
+        <option value="Medicine">💊 Medicine</option>
+        <option value="Chicks">🐣 Chicks</option>
+        <option value="Other">📦 Other</option>
+    </select>
+
+    <label>Amount (₦)</label>
+    <input id="financeAmount" type="number" placeholder="Example: 5000">
+    <label>Description</label>
+    <input id="financeDescription" type="text" placeholder="Example: Sold 10 chickens">
+        <button type="button" class="main-button" onclick="addFinance()">
+        ➕ Add Transaction
+    </button>
+
+    <div class="records-summary">
+
+        <div class="summary-box">
+            💰 Total Income
+            <strong id="totalIncome">₦0</strong>
+        </div>
+
+        <div class="summary-box">
+            💸 Total Expenses
+            <strong id="totalExpenses">₦0</strong>
+        </div>
+
+        <div class="summary-box">
+            📈 Net Profit
+            <strong id="financeBalance">₦0</strong>
+        </div>
+        <div class="summary-box">
+            📊 Total Transactions
+            <strong id="financeTransactions">0</strong>
+        </div>
+
+    </div>
+
+    <div id="financeList"></div>
+
+<div class="finance-filters">
+<div class="finance-report">
+<div class="finance-chart">
+    <h3>📊 Financial Overview Chart</h3>
+    <p>Compare your farm's income, expenses, and profit.</p>
+    <canvas id="financeChart" width="320" height="240"></canvas>
+</div>
+    <h3>📊 Finance Report</h3>
+
+    <div class="report-box">
+        💰 Total Income:
+        <strong id="reportIncome">₦0</strong>
+    </div>
+
+    <div class="report-box">
+        💸 Total Expenses:
+        <strong id="reportExpenses">₦0</strong>
+    </div>
+
+    <div class="report-box">
+        📈 Net Profit:
+        <strong id="reportProfit">₦0</strong>
+    </div>
+
+</div><div class="pdf-report">
+    <button type="button" class="main-button" onclick="downloadFinancePDF()">
+        📄 Download Finance Report
+    </button>
+</div>
+
+
+    <input
+        type="text"
+        id="financeSearch"
+        placeholder="🔍 Search transactions..."
+    ><div class="monthly-report">
+
+    <label>📅 Select Month</label>
+
+    <input
+        type="month"
+        id="financeMonth"
+    >
+
+    <button
+        type="button"
+        class="main-button"
+        onclick="showMonthlyReport()"
+    >
+        📊 View Monthly Report
+    </button>
+
+    <div id="monthlyReportResult"></div>
+
+</div>
+
+    <select id="financeFilterType">
+        <option value="all">All Transactions</option>
+        <option value="income">💰 Income</option>
+        <option value="expense">💸 Expense</option>
+    </select>
+
+
+
+    <select id="financeFilterCategory">
+        <option value="all">All Categories</option>
+        <option value="Sales">🐔 Chicken/Egg Sales</option>
+        <option value="Feed">🌾 Feed</option>
+        <option value="Medicine">💊 Medicine</option>
+        <option value="Chicks">🐣 Chicks</option>
+        <option value="Other">📦 Other</option>
+    </select>
+
+</div>
+
+    <button class="clear-button" onclick="clearFinance()">
+        🗑️ Clear Finance Records
+    </button>
+
+</section>
+<!-- FARM RECORDS -->
+<section id="records" class="calculator">
+
+    <h2>📊 Farm Records</h2>
+
+    <label>Date</label>
+    <input id="recordDate" type="date">
+
+    <label>Number of Chickens</label>
+    <input id="recordChickens" type="number" placeholder="Example: 20">
+
+    <label>Eggs Collected</label>
+    <input id="eggsCollected" type="number" placeholder="Example: 15">
+
+    <label>Feed Used (kg)</label>
+    <input id="feedUsed" type="number" placeholder="Example: 5">
+
+    <label>Medicine Expense (₦)</label>
+    <input id="medicineExpense" type="number" placeholder="Example: 2000">
+
+    <label>Sales (₦)</label>
+    <input id="sales" type="number" placeholder="Example: 10000">
+
+    <button class="main-button" onclick="addRecord()">
+        ➕ Add Farm Record
+    </button>
+
+    <div class="records-summary">
+
+        <div class="summary-box">
+            🐔 Chickens
+            <strong id="totalChickens">0</strong>
+        </div>
+
+        <div class="summary-box">
+            🥚 Eggs
+            <strong id="totalEggs">0</strong>
+        </div>
+
+        <div class="summary-box">
+            🌾 Feed
+            <strong id="totalFeed">0 kg</strong>
+        </div>
+
+        <div class="summary-box">
+            💊 Medicine
+            <strong id="totalMedicine">₦0</strong>
+        </div>
+
+        <div class="summary-box">
+            💰 Sales
+            <strong id="totalSales">₦0</strong>
+        </div>
+
+        <div class="summary-box">
+            📈 Net Balance
+            <strong id="netBalance">₦0</strong>
+        </div>
+
+    </div>
+
+    <div id="recordsList"></div>
+
+    <button class="clear-button" onclick="clearRecords()">
+        🗑️ Clear All Records
+    </button>
+
+</section>
+
+
+<footer>
+    A&F Poultry Farm © 2026
+</footer>
+
+
+
+
+
+<!-- POULTRY HEALTH RECORDS -->
+<section id="poultryHealth" class="calculator">
+    <h2>🐔 Poultry Health & Vaccination Records</h2>
+    <p>Record vaccinations, diseases, treatments, and recovery.</p>
+
+    <form id="healthForm">
+        <label for="healthDate">Date:</label>
+        <input type="date" id="healthDate" required>
+
+        <label for="healthType">Record type:</label>
+        <select id="healthType" required>
+            <option value="Vaccination">Vaccination</option>
+            <option value="Illness">Illness / Symptoms</option>
+            <option value="Treatment">Treatment / Medicine</option>
+            <option value="Recovery">Recovery</option>
+            <option value="Mortality">Mortality</option>
+        </select>
+
+        <label for="healthBirds">Number of birds affected or treated:</label>
+        <input type="number" id="healthBirds" min="0" step="1" required>
+
+        <label for="healthDetails">Vaccine, disease, symptoms, or medicine:</label>
+        <input type="text" id="healthDetails" placeholder="e.g. Newcastle vaccination" required>
+
+        <label for="healthNextDate">Next vaccination or follow-up date (optional):</label>
+        <input type="date" id="healthNextDate">
+
+        <label for="healthNotes">Additional notes:</label>
+        <textarea id="healthNotes" placeholder="Enter observations or treatment notes"></textarea>
+
+        <button type="submit" class="main-button">💾 Save Health Record</button>
+    </form>
+
+    <h3>📋 Saved Health Records</h3>
+    <div id="healthRecordsList"></div>
+</section>
+
+<section id="backupSection" class="calculator">
+    <h2>💾 Backup & Restore</h2>
+    <p>Protect your farm, financial, and poultry health records.</p>
+
+    <button type="button" class="main-button" onclick="downloadFarmBackup()">
+        📥 Download Backup
+    </button>
+
+    <h3>♻️ Restore Your Data</h3>
+    <p>Select a backup file previously downloaded from this website.</p>
+    <input type="file" id="backupFile" accept=".json,application/json">
+    <button type="button" class="main-button" onclick="restoreFarmBackup()">
+        ♻️ Restore Backup
+    </button>
+
+    <p id="backupMessage" role="status"></p>
+</section>
+
+<script>
+document.getElementById("financeSearch").addEventListener("input", filterFinance);
+document.getElementById("financeFilterType").addEventListener("change", filterFinance);
+document.getElementById("financeFilterCategory").addEventListener("change", filterFinance);
+</script>
+
+<script src="script.js"></script>
+
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./sw.js")
+      .then(() => console.log("A&F Poultry Farm service worker registered"))
+      .catch(error => console.error("Service worker registration failed:", error));
+  });
+}
+</script>
+
+</body>
+</html>
