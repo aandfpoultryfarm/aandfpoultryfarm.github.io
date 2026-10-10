@@ -379,7 +379,114 @@ footer {
 .whatsapp-button:hover {
     opacity: 0.9;
 }
+/* A&F POULTRY FARM MOBILE IMPROVEMENTS */
 
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    line-height: 1.5;
+}
+
+button,
+input,
+select,
+textarea {
+    font: inherit;
+}
+
+button {
+    min-height: 44px;
+    cursor: pointer;
+}
+
+nav {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 5px;
+}
+
+nav button {
+    flex: 1 1 auto;
+    max-width: 180px;
+    min-height: 44px;
+    transition: background 0.2s ease;
+}
+
+nav button:hover {
+    background: #0f512c;
+}
+
+.card,
+.summary-box,
+.calculator,
+.farm-info,
+.farm-tips {
+    border: 1px solid #e0ebe2;
+}
+
+input,
+select,
+textarea {
+    width: 100%;
+    max-width: 100%;
+    min-height: 44px;
+    padding: 10px 12px;
+    border: 1px solid #cbd8ce;
+    border-radius: 8px;
+    background: #fff;
+}
+
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+    outline: 3px solid #92d6ad;
+    outline-offset: 2px;
+}
+
+@media (max-width: 500px) {
+    header {
+        padding: 22px 12px;
+    }
+
+    header h1 {
+        font-size: clamp(21px, 6vw, 26px);
+    }
+
+    section {
+        width: 100%;
+        margin: 12px auto;
+        padding: 14px;
+    }
+
+    nav {
+        padding: 8px 5px;
+        gap: 3px;
+    }
+
+    nav button {
+        flex: 1 1 28%;
+        max-width: none;
+        padding: 9px 6px;
+        font-size: 12px;
+    }
+
+    .cards,
+    .records-summary,
+    .quick-actions,
+    .tips-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .card,
+    .summary-box,
+    .calculator {
+        padding: 15px;
+    }
+}
 </style>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
@@ -974,8 +1081,11 @@ document.getElementById("financeFilterType").addEventListener("change", filterFi
 document.getElementById("financeFilterCategory").addEventListener("change", filterFinance);
 </script>
 
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<script src="firebase.js"></script>
 <script src="script.js"></script>
-
 <script>
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {

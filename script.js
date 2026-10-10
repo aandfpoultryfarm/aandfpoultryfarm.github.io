@@ -957,12 +957,36 @@ function showAuth() {
     }
 }
 
+// A&F Poultry Farm — Firebase Authentication
+
 const registerForm = document.getElementById("registerForm");
 const loginForm = document.getElementById("loginForm");
 const authMessage = document.getElementById("authMessage");
 
+function showAuthMessage(message) {
+    if (authMessage) {
+        authMessage.textContent = message;
+    }
+}
+
+function getAuthError(error) {
+    const code = error.code || "";
+
+    const messages = {
+        "auth/email-already-in-use": "This email already has an account. Please log in.",
+        "auth/invalid-email": "Please enter a valid email address.",
+        "auth/weak-password": "Please choose a stronger password.",
+        "auth/invalid-credential": "Email or password is incorrect.",
+        "auth/user-not-found": "No account was found. Please create an account.",
+        "auth/wrong-password": "Email or password is incorrect.",
+        "auth/network-request-failed": "Network error. Check your internet connection."
+    };
+
+    return messages[code] || "Something went wrong. Please try again.";
+}
+
 if (registerForm) {
-    registerForm.addEventListener("submit", function(event) {
+    registerForm.addEventListener("submit", async function(event) {
         event.preventDefault();
 
         const name = document.getElementById("registerName").value.trim();
@@ -970,45 +994,78 @@ if (registerForm) {
         const password = document.getElementById("registerPassword").value;
         const confirmPassword = document.getElementById("confirmPassword").value;
 
-        if (!name || !email) {
-            authMessage.textContent = "Please enter your name and email.";
-            return;
-        }
-
         if (password.length < 8) {
-            authMessage.textContent = "Your password must contain at least 8 characters.";
+            showAuthMessage("Your password must contain at least 8 characters.");
             return;
         }
 
         if (password !== confirmPassword) {
-            authMessage.textContent = "Your passwords do not match.";
+            showAuthMessage("Your passwords do not match.");
             return;
         }
 
-        authMessage.textContent =
-            "Form validated successfully! Secure account creation requires a backend.";
+        if (typeof farmAuth === "undefined") {
+            showAuthMessage("Firebase is not ready. Check your connection.");
+            return;
+        }
+
+        try {
+            showAuthMessage("Creating your account...");
+
+            const result = await farmAuth.createUserWithEmailAndPassword(
+                email,
+                password
+            );
+
+            await result.user.updateProfile({
+                displayName: name
+            });
+
+            showAuthMessage("Account created successfully! Welcome to A&F Poultry Farm.");
+            registerForm.reset();
+
+        } catch (error) {
+            showAuthMessage(getAuthError(error));
+        }
     });
 }
 
 if (loginForm) {
-    loginForm.addEventListener("submit", function(event) {
+    loginForm.addEventListener("submit", async function(event) {
         event.preventDefault();
 
-        authMessage.textContent =
-            "Login requires a secure authentication server. No password has been saved.";
+        const email = document.getElementById("loginEmail").value.trim();
+        const password = document.getElementById("loginPassword").value;
+
+        if (typeof farmAuth === "undefined") {
+            showAuthMessage("Firebase is not ready. Check your connection.");
+            return;
+        }
+
+        try {
+            showAuthMessage("Logging in...");
+
+            await farmAuth.signInWithEmailAndPassword(email, password);
+
+            showAuthMessage("Login successful! Welcome back.");
+            loginForm.reset();
+
+        } catch (error) {
+            showAuthMessage(getAuthError(error));
+        }
     });
 }
 
 function showRegister() {
     document.getElementById("registerPanel").style.display = "block";
     document.getElementById("loginPanel").style.display = "none";
-    document.getElementById("authMessage").textContent = "";
+    showAuthMessage("");
 }
 
 function showLogin() {
     document.getElementById("registerPanel").style.display = "none";
     document.getElementById("loginPanel").style.display = "block";
-    document.getElementById("authMessage").textContent = "";
+    showAuthMessage("");
 }
 
 // A&F POULTRY FARM: BACKUP AND RESTORE
