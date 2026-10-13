@@ -507,6 +507,7 @@ textarea:focus-visible {
     <button onclick="showCalculator()">💰 Profit</button>
     <button onclick="showFeedCalculator()">🌾 Feed</button>
     <button onclick="showRecords()">📋 Records</button>
+    <button onclick="showShop()">🛒 Shop</button>
     <button onclick="showPoultryHealth()">🐔 Poultry Health</button>
     <button onclick="showFinance()">💵 Finance</button>
     <button onclick="showBackup()">💾 Backup & Restore</button>
@@ -528,6 +529,11 @@ textarea:focus-visible {
         <div class="summary-box">
             🥚 Total Eggs
             <strong id="dashboardEggs">0</strong>
+        </div>
+
+        <div class="summary-box">
+            🐔 Chickens Lost
+            <strong id="dashboardMortality">0</strong>
         </div>
 
         <div class="summary-box">
@@ -562,6 +568,8 @@ textarea:focus-visible {
         <p>Compare your farm's sales and expenses.</p>
         <canvas id="farmPerformanceChart" height="220"></canvas>
     </div>
+
+</section>
 
 <!-- ABOUT & CONTACT -->
 
@@ -608,7 +616,6 @@ textarea:focus-visible {
         </div>
     </div>
 
-</section>
 </section>
 
 
@@ -710,12 +717,9 @@ textarea:focus-visible {
             decisions for your farm.
         </p>
     </div>
-</section>
-     <a href="https://wa.me/2348123598546" target="_blank" class="whatsapp-button">
-    💬 Chat with us on WhatsApp
-</a>
-
-    </div
+    <a href="https://wa.me/2347030164994" target="_blank" rel="noopener" class="whatsapp-button">
+        💬 Chat with us on WhatsApp
+    </a>
 </section>
 
 <div class="farm-tips">
@@ -749,6 +753,89 @@ textarea:focus-visible {
 
     </div>
 </div>	
+
+
+<!-- POULTRY SHOP -->
+<section id="shop" class="calculator">
+    <h2>🛒 A&F Poultry Shop</h2>
+    <p>Select products and quantities. Contact us for today's prices.</p>
+
+    <div class="tips-grid">
+        <div class="tip-card">
+            <span>🐣</span>
+            <h3>Broiler Chicks</h3>
+            <label>Quantity</label>
+            <input type="number" id="qty-broiler" min="0" value="0">
+            <label>Price per unit (₦)</label>
+            <input type="number" id="price-broiler" min="0" placeholder="Enter price">
+        </div>
+
+        <div class="tip-card">
+            <span>🥚</span>
+            <h3>Layer Chicks</h3>
+            <label>Quantity</label>
+            <input type="number" id="qty-layer" min="0" value="0">
+            <label>Price per unit (₦)</label>
+            <input type="number" id="price-layer" min="0" placeholder="Enter price">
+        </div>
+
+        <div class="tip-card">
+            <span>🐔</span>
+            <h3>Noiler Chicks</h3>
+            <label>Quantity</label>
+            <input type="number" id="qty-noiler" min="0" value="0">
+            <label>Price per unit (₦)</label>
+            <input type="number" id="price-noiler" min="0" placeholder="Enter price">
+        </div>
+
+        <div class="tip-card">
+            <span>🐓</span>
+            <h3>Local Chickens</h3>
+            <label>Quantity</label>
+            <input type="number" id="qty-local" min="0" value="0">
+            <label>Price per chicken (₦)</label>
+            <input type="number" id="price-local" min="0" placeholder="Enter price">
+        </div>
+
+        <div class="tip-card">
+            <span>🌾</span>
+            <h3>Poultry Feed</h3>
+            <label>Quantity (bags)</label>
+            <input type="number" id="qty-feed" min="0" value="0">
+            <label>Price per bag (₦)</label>
+            <input type="number" id="price-feed" min="0" placeholder="Enter price">
+        </div>
+
+        <div class="tip-card">
+            <span>💉</span>
+            <h3>Poultry Supplies</h3>
+            <label>Quantity</label>
+            <input type="number" id="qty-supplies" min="0" value="0">
+            <label>Price per item (₦)</label>
+            <input type="number" id="price-supplies" min="0" placeholder="Enter price">
+        </div>
+
+        <div class="tip-card">
+            <span>🥚</span>
+            <h3>Eggs</h3>
+            <label>Quantity (crates)</label>
+            <input type="number" id="qty-eggs" min="0" value="0">
+            <label>Price per crate (₦)</label>
+            <input type="number" id="price-eggs" min="0" placeholder="Enter price">
+        </div>
+    </div>
+
+    <h3>Estimated Order Total: <span id="shop-total">₦0</span></h3>
+    <p id="shop-price-note">Enter product prices to calculate your total.</p>
+
+    <button type="button" class="main-button" onclick="try { calculateShopTotal(); } catch (error) { document.getElementById('shop-price-note').textContent = 'Shop error: ' + error.message; }">
+        Calculate Total
+    </button>
+
+    <button type="button" class="main-button" onclick="try { orderShopWhatsApp(); } catch (error) { document.getElementById('shop-price-note').textContent = 'Shop error: ' + error.message; }">
+        Order on WhatsApp
+    </button>
+</section>
 
 <!-- PROFIT CALCULATOR -->
 <section id="profitCalculator" class="calculator">
@@ -956,7 +1043,10 @@ textarea:focus-visible {
     <input id="recordDate" type="date">
 
     <label>Number of Chickens</label>
-    <input id="recordChickens" type="number" placeholder="Example: 20">
+    <input id="recordChickens" type="number" min="0" placeholder="Example: 20">
+
+    <label>Chickens Lost (Mortality)</label>
+    <input id="recordMortality" type="number" min="0" value="0" placeholder="Example: 1">
 
     <label>Eggs Collected</label>
     <input id="eggsCollected" type="number" placeholder="Example: 15">
@@ -1090,7 +1180,7 @@ document.getElementById("financeFilterCategory").addEventListener("change", filt
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
 <script src="firebase.js"></script>
-<script src="script.js"></script>
+<script src="script.js?v=20261014"></script>
 <script>
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {

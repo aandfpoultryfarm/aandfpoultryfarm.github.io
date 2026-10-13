@@ -155,6 +155,9 @@ function addRecord() {
     let chickens = Number(
         document.getElementById("recordChickens").value
     );
+    let mortality = Number(
+        document.getElementById("recordMortality").value
+    ) || 0;
     let eggs = Number(
         document.getElementById("eggsCollected").value
     );
@@ -176,6 +179,8 @@ function addRecord() {
 
     if (
         chickens < 0 ||
+        mortality < 0 ||
+        mortality > chickens ||
         eggs < 0 ||
         feed < 0 ||
         medicine < 0 ||
@@ -188,6 +193,7 @@ const record = {
     id: Date.now(),
     date: date,
     chickens: chickens,
+    mortality: mortality,
     eggs: eggs,
     feed: feed,
     medicine: medicine,
@@ -203,6 +209,7 @@ const record = {
 
     document.getElementById("recordDate").value = "";
     document.getElementById("recordChickens").value = "";
+    document.getElementById("recordMortality").value = "0";
     document.getElementById("eggsCollected").value = "";
     document.getElementById("feedUsed").value = "";
     document.getElementById("medicineExpense").value = "";
@@ -285,6 +292,7 @@ function updateSummary() {
 
     let totalChickens = 0;
     let totalEggs = 0;
+    let totalMortality = 0;
     let totalFeed = 0;
     let totalMedicine = 0;
     let totalSales = 0;
@@ -398,6 +406,12 @@ function showRecords() {
     });
 }
 
+function showShop() {
+    document.getElementById("shop").scrollIntoView({
+        behavior: "smooth"
+    });
+}
+
 
 /* =========================
    START WEBSITE
@@ -417,6 +431,7 @@ function updateDashboard() {
     farmRecords.forEach(function(record) {
         totalChickens += Number(record.chickens) || 0;
         totalEggs += Number(record.eggs) || 0;
+        totalMortality += Number(record.mortality) || 0;
         totalFeed += Number(record.feed) || 0;
         farmMedicine += Number(record.medicine) || 0;
         farmSales += Number(record.sales) || 0;
@@ -441,6 +456,9 @@ function updateDashboard() {
 
     document.getElementById("dashboardEggs").textContent =
         totalEggs.toLocaleString("en-NG");
+
+    document.getElementById("dashboardMortality").textContent =
+        totalMortality.toLocaleString("en-NG");
 
     document.getElementById("dashboardFeed").textContent =
         totalFeed.toLocaleString("en-NG") + " kg";
@@ -1185,4 +1203,136 @@ if ("serviceWorker" in navigator) {
       .then(() => console.log("A&F Poultry Farm service worker registered"))
       .catch(error => console.error("Service worker registration failed:", error));
   });
+}
+// A&F Poultry Shop ordering functions
+
+window.afShopProductsFixed2026 = [
+    { id: "broiler", name: "Broiler Chicks" },
+    { id: "layer", name: "Layer Chicks" },
+    { id: "noiler", name: "Noiler Chicks" },
+    { id: "local", name: "Local Chickens" },
+    { id: "feed", name: "Poultry Feed" },
+    { id: "supplies", name: "Poultry Supplies" },
+    { id: "eggs", name: "Eggs" }
+];
+
+function getShopOrder() {
+    const items = [];
+    const shopProducts = [
+        { id: "broiler", name: "Broiler Chicks" },
+        { id: "layer", name: "Layer Chicks" },
+        { id: "noiler", name: "Noiler Chicks" },
+        { id: "local", name: "Local Chickens" },
+        { id: "feed", name: "Poultry Feed" },
+        { id: "supplies", name: "Poultry Supplies" },
+        { id: "eggs", name: "Eggs" }
+    ];
+    let total = 0;
+    let pricesComplete = true;
+
+    shopProducts.forEach(function (product) {
+        const quantityInput = document.getElementById("qty-" + product.id);
+        const priceInput = document.getElementById("price-" + product.id);
+
+        if (!quantityInput || !priceInput) return;
+
+        const quantity = Number(quantityInput.value);
+        const priceText = priceInput.value.trim();
+
+        if (!Number.isFinite(quantity) || quantity <= 0) return;
+
+        const price = Number(priceText);
+        const hasPrice = priceText !== "" &&
+            Number.isFinite(price) && price >= 0;
+
+        items.push({
+            name: product.name,
+            quantity: quantity,
+            price: hasPrice ? price : null
+        });
+
+        if (hasPrice) {
+            total += quantity * price;
+        } else {
+            pricesComplete = false;
+        }
+    });
+
+    return {
+        items: items,
+        total: total,
+        pricesComplete: pricesComplete
+    };
+}
+
+function calculateShopTotal() {
+    const order = getShopOrder();
+    const totalElement = document.getElementById("shop-total");
+    const noteElement = document.getElementById("shop-price-note");
+
+    if (order.items.length === 0) {
+        alert("Please select a quantity for at least one product.");
+        return;
+    }
+
+    if (!order.pricesComplete) {
+        totalElement.textContent = "Price needed";
+        noteElement.textContent =
+            "Enter a price for every selected product to calculate the full total.";
+        return;
+    }
+
+    totalElement.textContent =
+        "₦" + order.total.toLocaleString("en-NG");
+
+    noteElement.textContent = "Estimated total. Please confirm prices with us.";
+}
+
+function orderShopWhatsApp() {
+    const order = getShopOrder();
+
+    if (order.items.length === 0) {
+        alert("Please select a quantity for at least one product.");
+        return;
+    }
+
+    let message = "Hello A&F Poultry Farm. I want to place an order:\n\n";
+
+    order.items.forEach(function (item) {
+        message += item.name + " — Quantity: " + item.quantity;
+
+        if (item.price !== null) {
+            message += " — Unit price: ₦" +
+                item.price.toLocaleString("en-NG");
+            message += " — Subtotal: ₦" +
+                (item.quantity * item.price).toLocaleString("en-NG");
+        } else {
+            message += " — Please confirm today's price";
+        }
+
+        message += "\n";
+    });
+
+    if (order.pricesComplete) {
+        message += "\nEstimated total: ₦" +
+            order.total.toLocaleString("en-NG");
+    } else {
+        message += "\nPlease confirm any missing prices and the final total.";
+    }
+
+    message += "\n\nThank you.";
+
+    const whatsappURL =
+        "https://wa.me/2347030164994?text=" +
+        encodeURIComponent(message);
+
+    const noteElement = document.getElementById("shop-price-note");
+    noteElement.textContent = "Your order is ready. ";
+
+    const orderLink = document.createElement("a");
+    orderLink.href = whatsappURL;
+    orderLink.target = "_blank";
+    orderLink.rel = "noopener";
+    orderLink.textContent = "Tap here to open WhatsApp";
+    noteElement.appendChild(orderLink);
 }

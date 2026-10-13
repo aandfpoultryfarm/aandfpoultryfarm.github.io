@@ -1,4 +1,4 @@
-const CACHE_NAME = "af-poultry-v1";
+const CACHE_NAME = "af-poultry-v4";
 
 const FILES_TO_CACHE = [
   "./",
